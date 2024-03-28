@@ -20,7 +20,7 @@
                 :height="
                   bodySize.height.value -
                   (buttonSize.height.value + 8) -
-                  (itemSize.height.value + 18) * 2 -
+                  50 * formItemList.length -
                   50
                 "
                 :data="templateTableData"
@@ -56,11 +56,9 @@ const recordingPath = ref()
 const fileNameAndPathTemplate = ref()
 const bodyEl = ref()
 const buttonEl = ref()
-const itemEl = ref()
 
 const bodySize = useElementSize(bodyEl)
 const buttonSize = useElementSize(buttonEl)
-const itemSize = useElementSize(itemEl)
 
 const formItemList = ref([
   {
