@@ -6,28 +6,12 @@
           重新加载配置文件
         </ElButton>
         <ElForm class="max-w-550px">
-          <ElFormItem ref="itemEl" label="存放目录">
+          <ElFormItem v-for="(item, index) in formItemList" :key="index" :label="item.label">
             <div class="w-full flex justify-between space-x-4">
-              <ElInput v-model="recordingPath"></ElInput>
+              <ElInput v-model="item.inputValue"></ElInput>
               <SystemSettingsConfirmButton
-                v-model="recordingPathDialogVisible"
-                :validate-key="validateKey"
-                :popover-msg="dialogMsg"
-                :before-enter-function="handelRecordingPathShow"
-                :confirm-callback="handelRecordingPathChangeConfirm"></SystemSettingsConfirmButton>
-            </div>
-          </ElFormItem>
-          <ElFormItem label="路径模板">
-            <div class="w-full flex justify-between space-x-4">
-              <ElInput v-model="fileNameAndPathTemplate"></ElInput>
-              <SystemSettingsConfirmButton
-                v-model="fileNameDialogVisible"
-                :validate-key="validateKey"
-                :popover-msg="dialogMsg"
-                :before-enter-function="handelFileNameAndPathTemplateShow"
-                :confirm-callback="
-                  handelFileNameAndPathTemplateChangeConfirm
-                "></SystemSettingsConfirmButton>
+                :action-data="item.actionData"
+                :confirm-data="item.confirmData"></SystemSettingsConfirmButton>
             </div>
           </ElFormItem>
           <ElCollapse class="max-w-550px">
@@ -68,12 +52,8 @@ const router = useRouter()
 
 const date = moment()
 
-const dialogMsg = ref('')
-const validateKey = ref()
 const recordingPath = ref()
 const fileNameAndPathTemplate = ref()
-const fileNameDialogVisible = ref(false)
-const recordingPathDialogVisible = ref(false)
 const bodyEl = ref()
 const buttonEl = ref()
 const itemEl = ref()
@@ -81,6 +61,41 @@ const itemEl = ref()
 const bodySize = useElementSize(bodyEl)
 const buttonSize = useElementSize(buttonEl)
 const itemSize = useElementSize(itemEl)
+
+const formItemList = ref([
+  {
+    label: '存放目录',
+    inputValue: recordingPath,
+    actionData: {
+      action: setRecordingPath,
+      data: { path: recordingPath },
+      successMessage: '你确定要修改存放目录吗？',
+      errorMessage: '存放目录错误，请重新校验'
+    },
+    confirmData: {
+      action: setRecordingPath,
+      data: { path: recordingPath },
+      successMessage: '修改成功',
+      errorMessage: '修改失败，未知错误'
+    }
+  },
+  {
+    label: '路径模板',
+    inputValue: fileNameAndPathTemplate,
+    actionData: {
+      action: setFileNameAndPath,
+      data: { path_and_format: fileNameAndPathTemplate },
+      successMessage: '你确定要修改路径模板吗？',
+      errorMessage: '路径模板错误，请重新校验'
+    },
+    confirmData: {
+      action: setFileNameAndPath,
+      data: { path_and_format: fileNameAndPathTemplate },
+      successMessage: '修改成功',
+      errorMessage: '修改失败，未知错误'
+    }
+  }
+])
 
 const templateTableData = [
   {
@@ -150,11 +165,11 @@ const templateTableData = [
   },
   {
     template: '{R}',
-    explain: '随机数',
-    result: '123456'
+    explain: '随机字符串',
+    result: 'abc123456'
   },
   {
-    template: '\\',
+    template: '/',
     explain: '文件夹分隔符',
     result: '/'
   }
@@ -168,61 +183,6 @@ const handleReloadConfig = () => {
     })
     .catch(() => {
       ElMessage.error('刷新失败，未知错误')
-    })
-}
-const handelRecordingPathShow = () => {
-  fileNameDialogVisible.value = false
-  setRecordingPath({ path: recordingPath.value })
-    .then((res) => {
-      validateKey.value = res.data.data
-      dialogMsg.value = `你确定要修改存放目录吗？`
-    })
-    .catch(() => {
-      validateKey.value = -1
-      dialogMsg.value = '存放目录错误，请重新校验'
-    })
-}
-const handelRecordingPathChangeConfirm = () => {
-  setRecordingPath({
-    path: recordingPath.value,
-    check: validateKey.value
-  })
-    .then(() => {
-      ElMessage.success('修改成功')
-    })
-    .catch(() => {
-      ElMessage.error('修改失败，未知错误')
-    })
-    .finally(() => {
-      recordingPathDialogVisible.value = false
-    })
-}
-
-const handelFileNameAndPathTemplateShow = () => {
-  recordingPathDialogVisible.value = false
-  setFileNameAndPath({ path_and_format: fileNameAndPathTemplate.value })
-    .then((res) => {
-      validateKey.value = res.data.data
-      dialogMsg.value = `你确定要修改路径模板吗？`
-    })
-    .catch(() => {
-      validateKey.value = -1
-      dialogMsg.value = '路径模板错误，请重新校验'
-    })
-}
-const handelFileNameAndPathTemplateChangeConfirm = () => {
-  setFileNameAndPath({
-    path_and_format: fileNameAndPathTemplate.value,
-    check: validateKey.value
-  })
-    .then(() => {
-      ElMessage.success('修改成功')
-    })
-    .catch(() => {
-      ElMessage.error('修改失败，未知错误')
-    })
-    .finally(() => {
-      fileNameDialogVisible.value = false
     })
 }
 

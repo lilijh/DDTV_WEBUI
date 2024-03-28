@@ -1,37 +1,63 @@
 <template>
-  <ElPopover :visible="popoverVisible" @before-enter="beforeEnterFunction">
+  <ElPopover :visible="popoverVisible" @before-enter="handleAction(actionData)">
     <template #reference>
       <ElButton type="primary" @click="popoverVisible = true">应用</ElButton>
     </template>
     <span>{{ popoverMsg }}</span>
     <div class="flex justify-between">
       <ElButton size="small" @click="popoverVisible = false">取消</ElButton>
-      <ElButton size="small" type="primary" v-if="validateKey !== -1" @click="confirmCallback">
+      <ElButton
+        size="small"
+        type="primary"
+        v-if="validateKey !== -1"
+        @click="handleConfirm(confirmData)">
         确定
       </ElButton>
     </div>
   </ElPopover>
 </template>
 <script lang="ts" setup>
-const popoverVisible = defineModel<boolean>({ required: true })
+interface SettingsParams {
+  action: (data: any) => Promise<any>
+  data: any
+  successMessage: string
+  errorMessage: string
+}
 defineProps({
-  popoverMsg: {
-    type: String,
-    default: ''
-  },
-  validateKey: {
-    type: Object as PropType<number | string>,
-    default: -1
-  },
-
-  beforeEnterFunction: {
-    type: Function as PropType<() => void>,
+  actionData: {
+    type: Object as PropType<SettingsParams>,
     default: () => {}
   },
-  confirmCallback: {
-    type: Function as PropType<() => void>,
+  confirmData: {
+    type: Object as PropType<SettingsParams>,
     default: () => {}
   }
 })
+
+const validateKey = ref()
+const popoverMsg = ref()
+const popoverVisible = ref(false)
+
+const handleAction = ({ action, data, successMessage, errorMessage }: SettingsParams) => {
+  action(data)
+    .then((res) => {
+      validateKey.value = res.data.data
+      popoverMsg.value = successMessage
+    })
+    .catch(() => {
+      validateKey.value = -1
+      popoverMsg.value = errorMessage
+    })
+}
+const handleConfirm = ({ action, data, successMessage, errorMessage }: SettingsParams): void => {
+  action({ check: validateKey.value, ...data })
+    .then(() => {
+      popoverVisible.value = false
+      ElMessage.success(successMessage)
+    })
+    .catch(() => {
+      ElMessage.error(errorMessage)
+    })
+}
 </script>
 <style scoped lang="scss"></style>
