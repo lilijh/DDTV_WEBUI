@@ -2,9 +2,14 @@
   <div class="h-full p-4">
     <ElCard shadow="never" class="h-full" body-class="h-full">
       <div class="h-full w-full" ref="bodyEl">
-        <ElButton ref="buttonEl" class="mb-2" @click="handleReloadConfig">
-          重新加载配置文件
-        </ElButton>
+        <div class="mb-2 max-w-550px flex justify-between" ref="buttonEl">
+          <ElButton @click="handleReloadConfig">重新加载配置文件</ElButton>
+          <ElPopconfirm @confirm="handleResetAllSettings" title="确定要重置所有配置吗？">
+            <template #reference>
+              <ElButton type="danger">重置所有配置</ElButton>
+            </template>
+          </ElPopconfirm>
+        </div>
         <ElForm class="max-w-550px" label-width="auto">
           <SystemSettingsFormItem
             v-for="(item, index) in formItemList"
@@ -49,6 +54,7 @@ import {
   setRecordingPath,
   setAutoRepair,
   setHLSWaitingTime,
+  resetAllSettings,
   reloadConfig
 } from '@/api/config'
 import SystemSettingsFormItem from '@/components/SystemSettingsFormItem.vue'
@@ -223,6 +229,16 @@ const handleReloadConfig = () => {
     })
     .catch(() => {
       ElMessage.error('刷新失败，未知错误')
+    })
+}
+const handleResetAllSettings = () => {
+  resetAllSettings()
+    .then(() => {
+      ElMessage.success('重置成功')
+      router.go(0)
+    })
+    .catch(() => {
+      ElMessage.error('重置失败，未知错误')
     })
 }
 </script>
