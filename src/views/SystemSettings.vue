@@ -5,11 +5,12 @@
         <ElButton ref="buttonEl" class="mb-2" @click="handleReloadConfig">
           重新加载配置文件
         </ElButton>
-        <ElForm class="max-w-550px">
+        <ElForm class="max-w-550px" label-width="auto">
           <SystemSettingsFormItem
             v-for="(item, index) in formItemList"
             :key="index"
             :label="item.label"
+            :type="item.type"
             :action-data="item.actionData"
             :confirm-data="item.confirmData"
             :mounted-function="item.mountedFunction"></SystemSettingsFormItem>
@@ -42,11 +43,16 @@ import { useElementSize } from '@vueuse/core'
 import {
   getFileNameAndPath,
   getRecordingPath,
+  getAutoRepair,
+  getHLSWaitingTime,
   setFileNameAndPath,
   setRecordingPath,
+  setAutoRepair,
+  setHLSWaitingTime,
   reloadConfig
 } from '@/api/config'
 import SystemSettingsFormItem from '@/components/SystemSettingsFormItem.vue'
+import inputTypes from '@/enums/form_item_input_types'
 
 const router = useRouter()
 
@@ -62,6 +68,7 @@ const formItemList = ref([
   {
     label: '存放目录',
     mountedFunction: getRecordingPath,
+    type: inputTypes.TEXT,
     actionData: {
       action: setRecordingPath,
       data: {},
@@ -80,6 +87,7 @@ const formItemList = ref([
   {
     label: '路径模板',
     mountedFunction: getFileNameAndPath,
+    type: inputTypes.TEXT,
     actionData: {
       action: setFileNameAndPath,
       data: {},
@@ -91,6 +99,38 @@ const formItemList = ref([
       action: setFileNameAndPath,
       data: {},
       inputDataKey: 'path_and_format',
+      successMessage: '修改成功',
+      errorMessage: '修改失败，未知错误'
+    }
+  },
+  {
+    label: 'HLS等待时间',
+    mountedFunction: getHLSWaitingTime,
+    type: inputTypes.TEXT,
+    actionData: {
+      successMessage: '你确定要修改HLS等待时间吗？',
+      errorMessage: '未知错误'
+    },
+    confirmData: {
+      action: setHLSWaitingTime,
+      data: {},
+      inputDataKey: 'waitingtime',
+      successMessage: '修改成功',
+      errorMessage: '修改失败，未知错误'
+    }
+  },
+  {
+    label: '自动修复',
+    mountedFunction: getAutoRepair,
+    type: inputTypes.BOOLEAN,
+    actionData: {
+      successMessage: '你确定要修改自动修复吗？',
+      errorMessage: '未知错误'
+    },
+    confirmData: {
+      action: setAutoRepair,
+      data: {},
+      inputDataKey: 'automatic_repair',
       successMessage: '修改成功',
       errorMessage: '修改失败，未知错误'
     }
