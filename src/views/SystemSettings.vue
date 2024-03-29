@@ -114,7 +114,7 @@ const formItemList = ref([
     confirmData: {
       action: setHLSWaitingTime,
       data: {},
-      inputDataKey: 'waitingtime',
+      inputDataKey: 'waiting_time',
       successMessage: '修改成功',
       errorMessage: '修改失败，未知错误'
     }

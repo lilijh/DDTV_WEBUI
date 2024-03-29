@@ -24,7 +24,7 @@ export function getHLSWaitingTime() {
   return instance.get<Response<any>>('config/get_hls_waiting_time')
 }
 
-export function setHLSWaitingTime(data: { waitingtime: number }) {
+export function setHLSWaitingTime(data: { waiting_time: number }) {
   return instance.post<Response<any>>('config/set_hls_waiting_time', data)
 }
 
