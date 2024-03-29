@@ -55,6 +55,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SystemSettingsConfirmButton: typeof import('./src/components/SystemSettingsConfirmButton.vue')['default']
+    SystemSettingsFormItem: typeof import('./src/components/SystemSettingsFormItem.vue')['default']
     VirtualizedCard: typeof import('./src/components/VirtualizedCard.vue')['default']
   }
   export interface ComponentCustomProperties {

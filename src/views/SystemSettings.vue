@@ -6,14 +6,14 @@
           重新加载配置文件
         </ElButton>
         <ElForm class="max-w-550px">
-          <ElFormItem v-for="(item, index) in formItemList" :key="index" :label="item.label">
-            <div class="w-full flex justify-between space-x-4">
-              <ElInput v-model="item.inputValue"></ElInput>
-              <SystemSettingsConfirmButton
-                :action-data="item.actionData"
-                :confirm-data="item.confirmData"></SystemSettingsConfirmButton>
-            </div>
-          </ElFormItem>
+          <SystemSettingsFormItem
+            v-for="(item, index) in formItemList"
+            :key="index"
+            :label="item.label"
+            :action-data="item.actionData"
+            :confirm-data="item.confirmData"
+            :mounted-function="item.mountedFunction"></SystemSettingsFormItem>
+
           <ElCollapse class="max-w-550px">
             <ElCollapseItem title="模板变量说明">
               <ElTable
@@ -46,14 +46,12 @@ import {
   setRecordingPath,
   reloadConfig
 } from '@/api/config'
-import SystemSettingsConfirmButton from '@/components/SystemSettingsConfirmButton.vue'
+import SystemSettingsFormItem from '@/components/SystemSettingsFormItem.vue'
 
 const router = useRouter()
 
 const date = moment()
 
-const recordingPath = ref()
-const fileNameAndPathTemplate = ref()
 const bodyEl = ref()
 const buttonEl = ref()
 
@@ -63,32 +61,36 @@ const buttonSize = useElementSize(buttonEl)
 const formItemList = ref([
   {
     label: '存放目录',
-    inputValue: recordingPath,
+    mountedFunction: getRecordingPath,
     actionData: {
       action: setRecordingPath,
-      data: { path: recordingPath },
+      data: {},
+      inputDataKey: 'path',
       successMessage: '你确定要修改存放目录吗？',
       errorMessage: '存放目录错误，请重新校验'
     },
     confirmData: {
       action: setRecordingPath,
-      data: { path: recordingPath },
+      data: {},
+      inputDataKey: 'path',
       successMessage: '修改成功',
       errorMessage: '修改失败，未知错误'
     }
   },
   {
     label: '路径模板',
-    inputValue: fileNameAndPathTemplate,
+    mountedFunction: getFileNameAndPath,
     actionData: {
       action: setFileNameAndPath,
-      data: { path_and_format: fileNameAndPathTemplate },
+      data: {},
+      inputDataKey: 'path_and_format',
       successMessage: '你确定要修改路径模板吗？',
       errorMessage: '路径模板错误，请重新校验'
     },
     confirmData: {
       action: setFileNameAndPath,
-      data: { path_and_format: fileNameAndPathTemplate },
+      data: {},
+      inputDataKey: 'path_and_format',
       successMessage: '修改成功',
       errorMessage: '修改失败，未知错误'
     }
@@ -183,14 +185,5 @@ const handleReloadConfig = () => {
       ElMessage.error('刷新失败，未知错误')
     })
 }
-
-onMounted(() => {
-  getRecordingPath().then((res) => {
-    recordingPath.value = res.data.data
-  })
-  getFileNameAndPath().then((res) => {
-    fileNameAndPathTemplate.value = res.data.data
-  })
-})
 </script>
 <style scoped></style>
