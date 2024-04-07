@@ -67,3 +67,53 @@ export interface FileTreeNode {
   Extension: Optional<string>
   Children: FileTreeNode[]
 }
+
+export interface WsData {
+  Title: {
+    Value: string
+  }
+  description: {
+    Value: string
+  }
+  live_time: {
+    Value: number
+  }
+  live_status: {
+    Value: number
+  }
+  live_status_end_event: boolean
+  short_id: {
+    Value: number
+  }
+  cover_from_user: string
+  keyframe: string
+  CurrentMode: number
+  DownInfo: {
+    IsDownload: boolean
+    IsCut: boolean
+    taskType: number
+    DownloadSize: number
+    RealTimeDownloadSpe: number
+    Status: number
+    StartTime: string
+    EndTime: string
+    DownloadFileList: {
+      TranscodingCount: number
+      VideoFile: unknown[]
+      DanmuFile: unknown[]
+      SCFile: unknown[]
+      GiftFile: unknown[]
+      GuardFile: unknown[]
+    }
+  }
+  Name: string
+  Description: string
+  RoomId: number
+  UID: number
+  IsAutoRec: boolean
+  IsRemind: boolean
+  IsRecDanmu: boolean
+  Like: boolean
+  Shell: string
+  AppointmentRecord: boolean
+}
