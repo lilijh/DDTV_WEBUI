@@ -1,23 +1,22 @@
 import mitt from 'mitt'
 import { useWebSocket } from '@vueuse/core'
 import type { WsEvent } from '@/enums'
-import type { ObjEnumStringKey, ObjEnumValues } from '@/types'
-import type { WsData } from '@/types/response'
+import type { InnerObjectKeysOfType, InnerObjectValuesOfType } from '@/types'
 
-type cmdString = ObjEnumStringKey<typeof WsEvent>
-type WsEventCodes = ObjEnumValues<typeof WsEvent>
-interface WsResponse {
+type CmdString = InnerObjectKeysOfType<typeof WsEvent>
+type WsEventCodes = InnerObjectValuesOfType<typeof WsEvent>
+interface WsResponse<T> {
   code: WsEventCodes
-  cmd: cmdString
+  cmd: CmdString
   massage: string
-  data: WsData | null
+  data: T
 }
 
-const { emit, on } = mitt<Record<WsEventCodes, WsResponse>>()
+const { emit, on } = mitt<Record<WsEventCodes, WsResponse<any | null>>>()
 
 const wsClient = useWebSocket(`ws://${location.host}/ws`, {
   onMessage(ws, event) {
-    const data: WsResponse = JSON.parse(event.data as string)
+    const data: WsResponse<any | null> = JSON.parse(event.data as string)
     emit(data.code, data)
   },
   autoReconnect: {
